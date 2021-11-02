@@ -25,6 +25,7 @@
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "radix": 0,
+    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "memo"] }],
     "import/no-extraneous-dependencies": 0
     // End temporary rules
   }

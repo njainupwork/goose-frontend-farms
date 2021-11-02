@@ -4,6 +4,7 @@ import { useWallet } from '@binance-chain/bsc-use-wallet'
 import { ResetCSS } from '@pancakeswap-libs/uikit'
 import BigNumber from 'bignumber.js'
 import { useFetchPublicData } from 'state/hooks'
+import { useFetchCakeVault } from 'state/autoPool/hooks'
 import GlobalStyle from './style/Global'
 import Menu from './components/Menu'
 import PageLoader from './components/PageLoader'
@@ -34,6 +35,7 @@ const App: React.FC = () => {
   }, [account, connect])
 
   useFetchPublicData()
+  useFetchCakeVault()
 
   return (
     <Router>
@@ -49,7 +51,7 @@ const App: React.FC = () => {
               <Farms />
             </Route>
             <Route path="/nests">
-              <Farms tokenMode/>
+              <Farms tokenMode />
             </Route>
             {/* <Route path="/pools"> */}
             {/*  <Pools /> */}

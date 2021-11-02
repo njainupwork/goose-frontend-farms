@@ -9,7 +9,7 @@ export interface Farm extends FarmConfig {
   poolWeight?: number
   depositFeeBP?: number
   eggPerBlock?: number
-    userData?: {
+  userData?: {
     allowance: BigNumber
     tokenBalance: BigNumber
     stakedBalance: BigNumber
@@ -29,6 +29,43 @@ export interface Pool extends PoolConfig {
   }
 }
 
+export interface VaultFees {
+  performanceFee: number
+  callFee: number
+  withdrawalFee: number
+  withdrawalFeePeriod: number
+}
+
+export interface VaultUser {
+  isLoading: boolean
+  userShares: string
+  cakeAtLastUserAction: string
+  lastDepositedTime: string
+  lastUserActionTime: string
+}
+
+export interface CakeVault {
+  data: {
+    totalShares?: string
+    pricePerFullShare?: string
+    totalCakeInVault?: string
+    estimatedCakeBountyReward?: string
+    totalPendingCakeHarvest?: string
+    fees?: VaultFees
+    userData?: VaultUser
+  }
+}
+
+export interface CakeVaultData {
+  totalShares?: string
+  pricePerFullShare?: string
+  totalCakeInVault?: string
+  estimatedCakeBountyReward?: string
+  totalPendingCakeHarvest?: string
+  fees?: VaultFees
+  userData?: VaultUser
+}
+
 // Slices states
 
 export interface FarmsState {
@@ -44,4 +81,5 @@ export interface PoolsState {
 export interface State {
   farms: FarmsState
   pools: PoolsState
+  auto: CakeVault
 }
