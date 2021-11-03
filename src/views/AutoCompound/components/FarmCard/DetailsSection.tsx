@@ -10,6 +10,8 @@ import BigNumber from 'bignumber.js'
 export interface ExpandableSectionProps {
   totalStaked: string
   lpLabel?: string
+  performanceFee: number
+  tokenAddress: string
 }
 
 const Wrapper = styled.div`
@@ -31,7 +33,9 @@ const StyledLinkExternal = styled(LinkExternal)`
   }
 `
 
-const DetailsSection: React.FC<ExpandableSectionProps> = ({ totalStaked, lpLabel }) => {
+const DetailsSection: React.FC<ExpandableSectionProps> = ({ totalStaked, lpLabel, performanceFee, tokenAddress }) => {
+  const explorerLink = `https://mumbai.polygonscan.com/token/${tokenAddress}`
+  const swapLink = `https://exchange.goosedefi.com/#/swap/${tokenAddress}`
   return (
     <Wrapper>
       <Flex justifyContent="space-between">
@@ -39,6 +43,20 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({ totalStaked, lpLabel
         <Text>
           {getFullDisplayBalance(new BigNumber(totalStaked), 18, 2)} {lpLabel}
         </Text>
+      </Flex>
+      <Flex justifyContent="space-between">
+        <Text>Performance Fees :</Text>
+        <Text>{performanceFee / 100} %</Text>
+      </Flex>
+      <Flex justifyContent="flex-start">
+        <Link external href={explorerLink} bold={false}>
+          View on Polygon
+        </Link>
+      </Flex>
+      <Flex justifyContent="flex-start">
+        <Link external href={swapLink} bold={false}>
+          Get tokens
+        </Link>
       </Flex>
     </Wrapper>
   )

@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js'
 import styled, { keyframes } from 'styled-components'
 import { Flex, Text, Skeleton } from '@pancakeswap-libs/uikit'
 import { communityFarms } from 'config/constants'
+import address from 'config/constants/contracts'
 import { CakeVaultData, Farm } from 'state/types'
 import { provider } from 'web3-core'
 import useI18n from 'hooks/useI18n'
@@ -137,13 +138,12 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
           </>
         </Text>
       </Flex>
+      <Text fontSize="14px">Recent EGG profit:</Text>
       {hasAutoEarnings ? (
-        <Flex justifyContent="space-between" alignItems="center">
-          <Text>
-            <Balance fontSize="16px" value={autoCakeToDisplay} decimals={3} unit="EGG" />
-            <Balance fontSize="16px" value={autoUsdToDisplay} decimals={2} unit="$" /> Earned since your last action
-            <Text>{dateStringToDisplay}</Text>
-          </Text>
+        <Flex flexDirection="column" alignItems="flex-end">
+          <Balance fontSize="16px" value={autoCakeToDisplay} decimals={3} unit="EGG" />
+          <Balance fontSize="16px" value={autoUsdToDisplay} decimals={2} unit="$" /> Earned since your last action
+          <Text>{dateStringToDisplay}</Text>
         </Flex>
       ) : (
         <></>
@@ -155,7 +155,12 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
         expanded={showExpandableSection}
       />
       <ExpandingWrapper expanded={showExpandableSection}>
-        <DetailsSection totalStaked={auto.totalCakeInVault} lpLabel={lpLabel} />
+        <DetailsSection
+          totalStaked={auto.totalCakeInVault}
+          lpLabel={lpLabel}
+          performanceFee={auto.fees.performanceFee}
+          tokenAddress={address.cake[process.env.REACT_APP_CHAIN_ID]}
+        />
       </ExpandingWrapper>
     </FCard>
   )
