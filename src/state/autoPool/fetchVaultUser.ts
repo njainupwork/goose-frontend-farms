@@ -27,8 +27,8 @@ const fetchVaultUser = async (account: string) => {
       isLoading: false,
       userShares: userContractResponse[0].toString(),
       lastDepositedTime: userContractResponse[1].toString(),
-      lastUserActionTime: userContractResponse[2].toString(),
-      cakeAtLastUserAction: userContractResponse[3].toString(),
+      cakeAtLastUserAction: userContractResponse[2].toString(),
+      lastUserActionTime: userContractResponse[3].toString(),
       cakeBalance: balance.toString(),
     }
   } catch (error) {

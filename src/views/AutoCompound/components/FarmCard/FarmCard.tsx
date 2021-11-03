@@ -6,8 +6,11 @@ import { communityFarms } from 'config/constants'
 import { CakeVaultData, Farm } from 'state/types'
 import { provider } from 'web3-core'
 import useI18n from 'hooks/useI18n'
-import { usePriceCakeBusd } from 'state/hooks'
+import { useFarmFromPid, usePriceCakeBusd } from 'state/hooks'
 import ExpandableSectionButton from 'components/ExpandableSectionButton'
+import { BLOCKS_PER_YEAR } from 'config'
+import Balance from 'components/Balance'
+import { getCakeVaultEarnings } from 'views/AutoCompound/helpers'
 import DetailsSection from './DetailsSection'
 import CardHeading from './CardHeading'
 import CardActionsContainer from './CardActionsContainer'
@@ -101,14 +104,25 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
   // const farmImage = farm.lpSymbol.split(' ')[0].toLocaleLowerCase()
   const farmImage = 'cake-bnb.svg'
 
+  const { hasAutoEarnings, autoCakeToDisplay, autoUsdToDisplay } = getCakeVaultEarnings(
+    account,
+    new BigNumber(auto.userData.cakeAtLastUserAction),
+    new BigNumber(auto.userData.userShares),
+    new BigNumber(auto.pricePerFullShare),
+    cakePrice.toNumber(),
+  )
+
+  const lastActionInMs = auto.userData.lastUserActionTime && parseInt(auto.userData.lastUserActionTime) * 1000
+  const dateTimeLastAction = new Date(lastActionInMs)
+  const dateStringToDisplay = dateTimeLastAction.toLocaleDateString()
+
   const lpLabel = 'EGG'
-  const earnLabel = 'EGG'
-  // const farmAPY =
-  //   farm.apy &&
-  //   farm.apy.times(new BigNumber(100)).toNumber().toLocaleString(undefined, {
-  //     minimumFractionDigits: 2,
-  //     maximumFractionDigits: 2,
-  //   })
+  const farm = useFarmFromPid(0)
+  const cakeRewardPerBlock = new BigNumber(farm.eggPerBlock || 1)
+    .times(new BigNumber(farm.poolWeight))
+    .div(new BigNumber(10).pow(18))
+  const cakeRewardPerYear = cakeRewardPerBlock.times(BLOCKS_PER_YEAR)
+  const apy = cakePrice.times(cakeRewardPerYear)
 
   return (
     <FCard>
@@ -118,15 +132,22 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
         <Text>{TranslateString(352, 'APR')}:</Text>
         <Text bold style={{ display: 'flex', alignItems: 'center' }}>
           <>
-            <ApyButton cakePrice={cakePrice} apy={new BigNumber(500)} />
-            {500}%
+            <ApyButton cakePrice={cakePrice} apy={apy} />
+            {apy.toString()}%
           </>
         </Text>
       </Flex>
-      <Flex justifyContent="space-between">
-        <Text>{TranslateString(318, 'Earn')}:</Text>
-        <Text bold>{earnLabel}</Text>
-      </Flex>
+      {hasAutoEarnings ? (
+        <Flex justifyContent="space-between" alignItems="center">
+          <Text>
+            <Balance fontSize="16px" value={autoCakeToDisplay} decimals={3} unit="EGG" />
+            <Balance fontSize="16px" value={autoUsdToDisplay} decimals={2} unit="$" /> Earned since your last action
+            <Text>{dateStringToDisplay}</Text>
+          </Text>
+        </Flex>
+      ) : (
+        <></>
+      )}
       <CardActionsContainer farm={auto} ethereum={ethereum} account={account} />
       <Divider />
       <ExpandableSectionButton
