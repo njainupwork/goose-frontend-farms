@@ -42,6 +42,7 @@ export interface VaultUser {
   cakeAtLastUserAction: string
   lastDepositedTime: string
   lastUserActionTime: string
+  cakeBalance: string
 }
 
 export interface CakeVault {

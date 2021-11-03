@@ -2,9 +2,22 @@ import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 
 export const approve = async (lpContract, masterChefContract, account) => {
-  return lpContract.methods
-    .approve(masterChefContract.options.address, ethers.constants.MaxUint256)
+  try {
+    return lpContract.methods
+      .approve(masterChefContract.options.address, ethers.constants.MaxUint256)
+      .send({ from: account })
+  } catch (error) {
+    return null
+  }
+}
+
+export const autoStake = async (compounderContract, amount, account) => {
+  return compounderContract.methods
+    .deposit(new BigNumber(amount).times(new BigNumber(10).pow(18)).toString())
     .send({ from: account })
+    .on('transactionHash', (tx) => {
+      return tx.transactionHash
+    })
 }
 
 export const stake = async (masterChefContract, pid, amount, account) => {
@@ -37,6 +50,24 @@ export const sousStakeBnb = async (sousChefContract, amount, account) => {
 export const unstake = async (masterChefContract, pid, amount, account) => {
   return masterChefContract.methods
     .withdraw(pid, new BigNumber(amount).times(new BigNumber(10).pow(18)).toString())
+    .send({ from: account })
+    .on('transactionHash', (tx) => {
+      return tx.transactionHash
+    })
+}
+
+export const autoUnstake = async (compounderContract, amount, account) => {
+  return compounderContract.methods
+    .withdraw(new BigNumber(amount).toString())
+    .send({ from: account })
+    .on('transactionHash', (tx) => {
+      return tx.transactionHash
+    })
+}
+
+export const autoUnstakeMax = async (compounderContract, account) => {
+  return compounderContract.methods
+    .withdrawAll()
     .send({ from: account })
     .on('transactionHash', (tx) => {
       return tx.transactionHash

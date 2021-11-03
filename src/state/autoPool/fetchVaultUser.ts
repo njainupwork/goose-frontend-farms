@@ -1,5 +1,6 @@
 import compounderAbi from 'config/abi/compounder.json'
-import { getCakeVaultAddress } from 'utils/addressHelpers'
+import cakeAbi from 'config/abi/cake.json'
+import { getCakeAddress, getCakeVaultAddress } from 'utils/addressHelpers'
 import multicall from 'utils/multicall'
 
 const fetchVaultUser = async (account: string) => {
@@ -12,12 +13,23 @@ const fetchVaultUser = async (account: string) => {
       },
     ]
     const [userContractResponse] = await multicall(compounderAbi, calls)
+
+    const balanceCalls = [
+      {
+        address: getCakeAddress(),
+        name: 'balanceOf',
+        params: [account],
+      },
+    ]
+    const [balance] = await multicall(cakeAbi, balanceCalls)
+
     return {
       isLoading: false,
       userShares: userContractResponse[0].toString(),
       lastDepositedTime: userContractResponse[1].toString(),
       lastUserActionTime: userContractResponse[2].toString(),
       cakeAtLastUserAction: userContractResponse[3].toString(),
+      cakeBalance: balance.toString(),
     }
   } catch (error) {
     return {
@@ -26,6 +38,7 @@ const fetchVaultUser = async (account: string) => {
       lastDepositedTime: null,
       lastUserActionTime: null,
       cakeAtLastUserAction: null,
+      cakeBalance: '0',
     }
   }
 }
