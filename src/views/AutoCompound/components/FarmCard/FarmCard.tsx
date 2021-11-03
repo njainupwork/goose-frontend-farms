@@ -6,8 +6,8 @@ import { communityFarms } from 'config/constants'
 import { CakeVaultData, Farm } from 'state/types'
 import { provider } from 'web3-core'
 import useI18n from 'hooks/useI18n'
+import { usePriceCakeBusd } from 'state/hooks'
 import ExpandableSectionButton from 'components/ExpandableSectionButton'
-import { QuoteToken } from 'config/constants/types'
 import DetailsSection from './DetailsSection'
 import CardHeading from './CardHeading'
 import CardActionsContainer from './CardActionsContainer'
@@ -90,6 +90,7 @@ interface FarmCardProps {
 }
 
 const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
+  const cakePrice = usePriceCakeBusd()
   const TranslateString = useI18n()
 
   const [showExpandableSection, setShowExpandableSection] = useState(false)
@@ -100,13 +101,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
   // const farmImage = farm.lpSymbol.split(' ')[0].toLocaleLowerCase()
   const farmImage = 'cake-bnb.svg'
 
-  const totalValue: BigNumber = new BigNumber(0)
-
-  const totalValueFormated = totalValue
-    ? `$${Number(totalValue).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-    : '-'
-
-  const lpLabel = 'Auto Compound'
+  const lpLabel = 'EGG'
   const earnLabel = 'EGG'
   // const farmAPY =
   //   farm.apy &&
@@ -118,36 +113,16 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
   return (
     <FCard>
       <StyledCardAccent />
-      {/* <CardHeading
-        lpLabel={lpLabel}
-        multiplier={farm.multiplier}
-        risk={risk}
-        depositFee={farm.depositFeeBP}
-        farmImage={farmImage}
-        tokenSymbol={farm.tokenSymbol}
-      /> */}
-      {/* {!removed && (
-        <Flex justifyContent="space-between" alignItems="center">
-          <Text>{TranslateString(352, 'APR')}:</Text>
-          <Text bold style={{ display: 'flex', alignItems: 'center' }}>
-            {farm.apy ? (
-              <>
-                <ApyButton
-                  lpLabel={lpLabel}
-                  quoteTokenAdresses={quoteTokenAdresses}
-                  quoteTokenSymbol={quoteTokenSymbol}
-                  tokenAddresses={tokenAddresses}
-                  cakePrice={cakePrice}
-                  apy={farm.apy}
-                />
-                {farmAPY}%
-              </>
-            ) : (
-              <Skeleton height={24} width={80} />
-            )}
-          </Text>
-        </Flex>
-      )} */}
+      <CardHeading lpLabel={lpLabel} depositFee={auto.fees.performanceFee} farmImage={farmImage} tokenSymbol="Cake" />
+      <Flex justifyContent="space-between" alignItems="center">
+        <Text>{TranslateString(352, 'APR')}:</Text>
+        <Text bold style={{ display: 'flex', alignItems: 'center' }}>
+          <>
+            <ApyButton cakePrice={cakePrice} apy={new BigNumber(500)} />
+            {500}%
+          </>
+        </Text>
+      </Flex>
       <Flex justifyContent="space-between">
         <Text>{TranslateString(318, 'Earn')}:</Text>
         <Text bold>{earnLabel}</Text>
@@ -159,20 +134,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
         expanded={showExpandableSection}
       />
       <ExpandingWrapper expanded={showExpandableSection}>
-        {/* <DetailsSection
-          removed={removed}
-          isTokenOnly={farm.isTokenOnly}
-          bscScanAddress={
-            farm.isTokenOnly
-              ? `https://bscscan.com/token/${farm.tokenAddresses[process.env.REACT_APP_CHAIN_ID]}`
-              : `https://bscscan.com/token/${farm.lpAddresses[process.env.REACT_APP_CHAIN_ID]}`
-          }
-          totalValueFormated={totalValueFormated}
-          lpLabel={lpLabel}
-          quoteTokenAdresses={quoteTokenAdresses}
-          quoteTokenSymbol={quoteTokenSymbol}
-          tokenAddresses={tokenAddresses}
-        /> */}
+        <DetailsSection totalStaked={auto.totalCakeInVault} lpLabel={lpLabel} />
       </ExpandingWrapper>
     </FCard>
   )

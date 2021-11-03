@@ -9,12 +9,8 @@ import { Address } from 'config/constants/types'
 
 interface ApyCalculatorModalProps {
   onDismiss?: () => void
-  lpLabel?: string
   cakePrice?: BigNumber
   apy?: BigNumber
-  quoteTokenAdresses?: Address
-  quoteTokenSymbol?: string
-  tokenAddresses: Address
 }
 
 const Grid = styled.div`
@@ -33,17 +29,8 @@ const Description = styled(Text)`
   margin-bottom: 28px;
 `
 
-const ApyCalculatorModal: React.FC<ApyCalculatorModalProps> = ({
-  onDismiss,
-  lpLabel,
-  quoteTokenAdresses,
-  quoteTokenSymbol,
-  tokenAddresses,
-  cakePrice,
-  apy,
-}) => {
+const ApyCalculatorModal: React.FC<ApyCalculatorModalProps> = ({ onDismiss, cakePrice, apy }) => {
   const TranslateString = useI18n()
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({ quoteTokenAdresses, quoteTokenSymbol, tokenAddresses })
   const farmApy = apy.times(new BigNumber(100)).toNumber()
   const oneThousandDollarsWorthOfCake = 1000 / cakePrice.toNumber()
 
@@ -125,11 +112,6 @@ const ApyCalculatorModal: React.FC<ApyCalculatorModalProps> = ({
           'Calculated based on current rates. Compounding once daily. Rates are estimates provided for your convenience only, and by no means represent guaranteed returns.',
         )}
       </Description>
-      <Flex justifyContent="center">
-        <LinkExternal href={`https://exchange.pancakeswap.finance/#/add/${liquidityUrlPathParts}`}>
-          {TranslateString(999, 'Get')} {lpLabel}
-        </LinkExternal>
-      </Flex>
     </Modal>
   )
 }

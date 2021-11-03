@@ -7,6 +7,7 @@ import { State, Farm, Pool, CakeVault, CakeVaultData } from './types'
 import { QuoteToken } from '../config/constants/types'
 
 const ZERO = new BigNumber(0)
+const ONE = new BigNumber(1)
 
 export const useFetchPublicData = () => {
   const dispatch = useDispatch()
@@ -85,7 +86,7 @@ export const usePriceCakeBusd = (): BigNumber => {
   // return farm.tokenPriceVsQuote ? bnbPriceUSD.times(farm.tokenPriceVsQuote) : ZERO
   const pid = 0 // EGG-BUSD LP
   const farm = useFarmFromPid(pid)
-  return farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : ZERO
+  return farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : ONE
 }
 
 export const useTotalValue = (): BigNumber => {
