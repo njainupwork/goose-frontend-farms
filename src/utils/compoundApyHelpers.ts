@@ -1,5 +1,21 @@
 const roundToTwoDp = (number) => Math.round(number * 100) / 100
 
+export const getApy = (apr: number, compoundFrequency = 1, days = 365, performanceFee = 0) => {
+  const daysAsDecimalOfYear = days / 365
+  const aprAsDecimal = apr / 100
+  const timesCompounded = 365 * compoundFrequency
+  let apyAsDecimal = (apr / 100) * daysAsDecimalOfYear
+  if (timesCompounded > 0) {
+    apyAsDecimal = (1 + aprAsDecimal / timesCompounded) ** (timesCompounded * daysAsDecimalOfYear) - 1
+  }
+  if (performanceFee) {
+    const performanceFeeAsDecimal = performanceFee / 100
+    const takenAsPerformanceFee = apyAsDecimal * performanceFeeAsDecimal
+    apyAsDecimal -= takenAsPerformanceFee
+  }
+  return apyAsDecimal
+}
+
 export const calculateCakeEarnedPerThousandDollars = ({ numberOfDays, farmApy, cakePrice }) => {
   // Everything here is worked out relative to a year, with the asset compounding daily
   const timesCompounded = 365

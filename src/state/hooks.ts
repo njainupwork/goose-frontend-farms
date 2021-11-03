@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useRefresh from 'hooks/useRefresh'
 import { fetchFarmsPublicDataAsync, fetchPoolsPublicDataAsync, fetchPoolsUserDataAsync } from './actions'
-import { State, Farm, Pool } from './types'
+import { State, Farm, Pool, CakeVault, CakeVaultData } from './types'
 import { QuoteToken } from '../config/constants/types'
 
 const ZERO = new BigNumber(0)
@@ -22,6 +22,11 @@ export const useFetchPublicData = () => {
 export const useFarms = (): Farm[] => {
   const farms = useSelector((state: State) => state.farms.data)
   return farms
+}
+
+export const useAutoCompound = (): CakeVaultData => {
+  const compound = useSelector((state: State) => state.auto.data)
+  return compound
 }
 
 export const useFarmFromPid = (pid): Farm => {

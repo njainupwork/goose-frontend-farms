@@ -2,8 +2,9 @@ import { useCallback } from 'react'
 import { useWallet } from '@binance-chain/bsc-use-wallet'
 import { useDispatch } from 'react-redux'
 import { fetchFarmUserDataAsync, updateUserStakedBalance, updateUserBalance } from 'state/actions'
-import { stake, sousStake, sousStakeBnb } from 'utils/callHelpers'
-import { useMasterchef, useSousChef } from './useContract'
+import { stake, sousStake, sousStakeBnb, autoStake } from 'utils/callHelpers'
+import { fetchCakeVaultUserData } from 'state/autoPool'
+import { useCompounder, useMasterchef, useSousChef } from './useContract'
 
 const useStake = (pid: number) => {
   const dispatch = useDispatch()
@@ -41,6 +42,23 @@ export const useSousStake = (sousId, isUsingBnb = false) => {
       dispatch(updateUserBalance(sousId, account))
     },
     [account, dispatch, isUsingBnb, masterChefContract, sousChefContract, sousId],
+  )
+
+  return { onStake: handleStake }
+}
+
+export const useAutoStake = () => {
+  const dispatch = useDispatch()
+  const { account } = useWallet()
+  const compounder = useCompounder()
+
+  const handleStake = useCallback(
+    async (amount: string) => {
+      const txHash = await autoStake(compounder, amount, account)
+      dispatch(fetchCakeVaultUserData({ account }))
+      console.info(txHash)
+    },
+    [account, dispatch, compounder],
   )
 
   return { onStake: handleStake }

@@ -1,11 +1,13 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useWallet } from '@binance-chain/bsc-use-wallet'
 import { Contract } from 'web3-eth-contract'
 import { ethers } from 'ethers'
 import { useDispatch } from 'react-redux'
+import { fetchCakeVaultUserData } from 'state/autoPool'
 import { updateUserAllowance, fetchFarmUserDataAsync } from 'state/actions'
 import { approve } from 'utils/callHelpers'
-import { useMasterchef, useCake, useSousChef, useLottery } from './useContract'
+import { useMasterchef, useCake, useSousChef, useLottery, useCompounder } from './useContract'
+import useLastUpdated from './useLastUpdated'
 
 // Approve a Farm
 export const useApprove = (lpContract: Contract) => {
@@ -78,4 +80,43 @@ export const useIfoApprove = (tokenContract: Contract, spenderAddress: string) =
   }, [account, spenderAddress, tokenContract])
 
   return onApprove
+}
+
+export const useCompounderApprove = (lpContract: Contract) => {
+  const dispatch = useDispatch()
+  const { account }: { account: string } = useWallet()
+  const compounder = useCompounder()
+
+  const handleApprove = useCallback(async () => {
+    try {
+      const tx = await approve(lpContract, compounder, account)
+      dispatch(fetchCakeVaultUserData({ account }))
+      return tx
+    } catch (e) {
+      return false
+    }
+  }, [account, dispatch, lpContract, compounder])
+
+  return { onApprove: handleApprove }
+}
+
+export const useCheckVaultApprovalStatus = () => {
+  const [isVaultApproved, setIsVaultApproved] = useState(false)
+  const { account } = useWallet()
+  const cakeContract = useCake()
+  const cakeVaultContract = useCompounder()
+  const { lastUpdated, setLastUpdated } = useLastUpdated()
+  useEffect(() => {
+    const checkApprovalStatus = async () => {
+      try {
+        const currentAllowance = await cakeContract.methods.allowance(account, cakeVaultContract.options.address).call()
+        setIsVaultApproved(currentAllowance > 0)
+      } catch (error) {
+        setIsVaultApproved(false)
+      }
+    }
+    checkApprovalStatus()
+  }, [account, cakeContract, cakeVaultContract, lastUpdated])
+
+  return { isVaultApproved, setLastUpdated }
 }

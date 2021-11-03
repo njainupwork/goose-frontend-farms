@@ -7,8 +7,9 @@ import {
   updateUserBalance,
   updateUserPendingReward,
 } from 'state/actions'
-import { unstake, sousUnstake, sousEmegencyUnstake } from 'utils/callHelpers'
-import { useMasterchef, useSousChef } from './useContract'
+import { fetchCakeVaultUserData } from 'state/autoPool'
+import { unstake, sousUnstake, sousEmegencyUnstake, autoUnstake, autoUnstakeMax } from 'utils/callHelpers'
+import { useCompounder, useMasterchef, useSousChef } from './useContract'
 
 const useUnstake = (pid: number) => {
   const dispatch = useDispatch()
@@ -53,6 +54,29 @@ export const useSousUnstake = (sousId) => {
       dispatch(updateUserPendingReward(sousId, account))
     },
     [account, dispatch, isOldSyrup, masterChefContract, sousChefContract, sousId],
+  )
+
+  return { onUnstake: handleUnstake }
+}
+
+export const useAutoUnstake = () => {
+  const dispatch = useDispatch()
+  const { account } = useWallet()
+  const compounder = useCompounder()
+
+  const handleUnstake = useCallback(
+    async (amount: string, isMax: boolean) => {
+      if (!isMax) {
+        const txHash = await autoUnstake(compounder, amount, account)
+        dispatch(fetchCakeVaultUserData({ account }))
+        console.info(txHash)
+      } else {
+        const txHash = await autoUnstakeMax(compounder, account)
+        dispatch(fetchCakeVaultUserData({ account }))
+        console.info(txHash)
+      }
+    },
+    [account, dispatch, compounder],
   )
 
   return { onUnstake: handleUnstake }

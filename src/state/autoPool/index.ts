@@ -22,6 +22,7 @@ const initialState: CakeVault = {
       cakeAtLastUserAction: null,
       lastDepositedTime: null,
       lastUserActionTime: null,
+      cakeBalance: '0',
     },
   },
 }
