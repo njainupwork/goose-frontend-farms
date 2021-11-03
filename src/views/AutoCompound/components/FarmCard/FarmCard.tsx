@@ -138,13 +138,15 @@ const FarmCard: React.FC<FarmCardProps> = ({ auto, ethereum, account }) => {
           </>
         </Text>
       </Flex>
-      <Text fontSize="14px">Recent EGG profit:</Text>
       {hasAutoEarnings ? (
-        <Flex flexDirection="column" alignItems="flex-end">
-          <Balance fontSize="16px" value={autoCakeToDisplay} decimals={3} unit="EGG" />
-          <Balance fontSize="16px" value={autoUsdToDisplay} decimals={2} unit="$" /> Earned since your last action
-          <Text>{dateStringToDisplay}</Text>
-        </Flex>
+        <>
+          <Text fontSize="14px">Recent EGG profit:</Text>
+          <Flex flexDirection="column" alignItems="flex-end">
+            <Balance fontSize="16px" value={autoCakeToDisplay} decimals={3} unit="EGG" />
+            <Balance fontSize="16px" value={autoUsdToDisplay} decimals={2} unit="$" /> Earned since your last action
+            <Text>{dateStringToDisplay}</Text>
+          </Flex>
+        </>
       ) : (
         <></>
       )}
